@@ -1,0 +1,139 @@
+/*
+  $Id: ,v 3.00 2015/05/29
+
+  oscAffiliate, Affiliate Module for osCommerce
+  http://www.snowtech.com.au
+
+  Copyright (c) 2002 -2015 Snowtech Services
+
+*/
+
+Original add on url http://addons.oscommerce.com/info/158
+
+
+********  TO INSTALL **********
+
+NEW INSTALLATIONS ONLY.
+
+Upload all files to corresponding folders of your osCommerce site.
+You must also perform a few manual alterations to your osCommerce files:
+THERE ARE affiliate_configure.php files in the catalog/includes and admin/includes folders -> look at them !!!
+
+******** MAKE A BACK-UP OF THESE FILES FIRST **********
+
+
+MySQL ALTERATIONS
+Insert the new tables found in the affiliate.sql file into your osCommerce catalog database.
+Upload files they are all new to your installation (unless you already have osCAffiliate installed)
+
+##################################################################################################################
+
+CATALOG ALTERATIONS
+
+##################################################################################################################
+catalog / stylesheet.css
+ADD TO END
+/* UL Class osCaffiliate */
+.ul
+{
+    list-style-type: none;
+}
+/* UL Class osCaffiliate */
+=================================================================
+catalog/product_info.php
+FIND:
+<?php echo tep_draw_form('cart_quantity', tep_href_link(FILENAME_PRODUCT_INFO, tep_get_all_get_params(array('action')) . 'action=add_product')); ?>
+
+<div>
+  <h1 style="float: right;"><?php echo $products_price; ?></h1>
+  <h1><?php echo $products_name; ?></h1>
+</div>
+
+REPLACE WITH 
+ 
+<div>
+  <h1 style="float: right;"><?php echo $products_price; ?></h1>
+  <h1><?php echo $products_name; ?></h1>
+  <?php if (tep_session_is_registered('affiliate_id')) { echo '<a href="' . tep_href_link(FILENAME_AFFILIATE_BANNERS_BUILD, 'individual_banner_id=' . $product_info['products_id']) .'" target="_self">' . tep_draw_button(MAKE_A_LINK,'folder-collapsed',null,'primary') . ' </a>'; } ?>
+  </form>
+</div>
+<?php echo tep_draw_form('cart_quantity', tep_href_link(FILENAME_PRODUCT_INFO, tep_get_all_get_params(array('action')) . 'action=add_product')); ?>
+=================================================================
+In checkout_process.php in the catalog directory find line
+  // load the after_process function from the payment modules
+  $payment_modules->after_process();
+and insert before it
+  // Include OSC-AFFILIATE
+  include(DIR_WS_INCLUDES . 'affiliate_checkout_process.php');
+=================================================================
+Open catalog / includes / template_top.php, 
+ADD before the </head> Tag
+<script type="text/javascript" src="ext/tooltip/tooltipsy.min.js"></script>    
+=================================================================
+In application_top.php in the catalog/includes directory enter at the end of the file before ?>
+// Include OSC-AFFILIATE
+  include(DIR_WS_INCLUDES . 'affiliate_application_top.php');
+=================================================================
+In catalog/includes/footer
+Add before the final ?>
+<script type="text/javascript">
+$('.hastip').tooltipsy({
+    css: {
+        'padding': '5px',
+        'max-width': '300px',
+        'color': '#303030',
+        'background-color': '#F0F7FE',
+        'border': '1px solid #6DB8E7',
+        '-moz-box-shadow': '0 0 10px rgba(0, 0, 0, .5)',
+        '-webkit-box-shadow': '0 0 10px rgba(0, 0, 0, .5)',
+        'box-shadow': '0 0 10px rgba(0, 0, 0, .5)',
+        'text-shadow': 'none'
+    }
+});
+</script>
+=================================================================
+CATALOG / includes / filenames.php
+ADD
+define('FILENAME_CATEGORIES_INFO', 'index.php');
+=================================================================
+In catalog / includes / languages / english / product_info.php
+ADD just before the last ?>
+// osCAffiliate
+define('MAKE_A_LINK', 'Create a Product Link');
+// osCAffiliate
+
+##################################################################################################################
+
+ADMIN ALTERATIONS
+
+##################################################################################################################
+
+In index.php in the admin directory find
+  include('includes/application_top.php');
+
+and on a new line add the following code after it:
+
+  include(DIR_WS_CLASSES . 'currencies.php');
+  $currencies = new currencies();
+=================================================================
+In application_top.php in the admin/includes enter at the end of the file before ?>:
+// Include OSC-AFFILIATE
+  include(DIR_WS_INCLUDES . 'affiliate_application_top.php');
+=================================================================
+
+DO NOT DO THIS STEP IF YOU USE VERSION 2.3.4
+
+In column_left.php in the admin/includes directory find 
+  include(DIR_WS_BOXES . 'reports.php');
+and on a new line add this after it:
+  include(DIR_WS_BOXES . 'affiliate.php');
+
+********  TO USE THIS MODULE **********
+Quick Set up Instructions.
+
+1) Log into your admin >> Modules >> Boxes >> Install Module (Affiliate Module) >> Install Module >> Set the order and column.
+2) Admin >> Configuration >> Affiliate Program >> Set up as Desired.
+
+
+
+********  IT IS STRONGLY SUGGESTED TO MAKE A BACK-UP OF THESE FILES FIRST **********
